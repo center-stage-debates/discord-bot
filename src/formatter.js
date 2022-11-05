@@ -8,7 +8,7 @@ exports.abbreviate = function (text, length) {
 
 exports.reminders = async function (billHearingsReminders, channel) {
   if (database.getConfig('embeds')) {
-    const embed = new Discord.RichEmbed().setTitle(`Important Reminders`).setDescription(`The following hearings are scheduled for the next ${database.getConfig('reminder')} days.`);
+    const embed = new Discord.EmbedBuilder().setTitle(`Important Reminders`).setDescription(`The following hearings are scheduled for the next ${database.getConfig('reminder')} days.`);
 
     let count = 0;
     for (const billHearingsReminder of billHearingsReminders) {
@@ -43,7 +43,7 @@ exports.updateBill = async function (bill, updateReport, channel) {
 
   if (database.getConfig('embeds')) {
     if (updateReport.new || updateReport.progress || updateReport.hearing) {
-      const embed = new Discord.RichEmbed()
+      const embed = new Discord.EmbedBuilder()
         .setTitle(`${parser.state(bill.state)} ${bill.number} ${updateReport.new ? 'Introduced' : 'Update'}`)
         .setURL(bill.url)
         .setDescription(this.abbreviate(bill.title, 500));
@@ -87,7 +87,7 @@ exports.bills = async function (bills, channel, client) {
     const pagesAmount = Math.ceil(bills.length / database.getConfig('page'));
 
     while (index < bills.length) {
-      const embed = new Discord.RichEmbed().setTitle(`Legislation`).setDescription(`Page ${page}/${pagesAmount} - ${bills.length} bills in total.`);
+      const embed = new Discord.EmbedBuilder().setTitle(`Legislation`).setDescription(`Page ${page}/${pagesAmount} - ${bills.length} bills in total.`);
 
       while (index < bills.length && fields < database.getConfig('page')) {
         const bill = bills[index];
