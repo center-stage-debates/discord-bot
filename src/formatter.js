@@ -17,16 +17,21 @@ exports.reminders = async function (billHearingsReminders, channel) {
         for (const billHearingReminder of billHearingsReminder.hearingReminders) {
           block += `${billHearingReminder.type || 'Hearing'} is ${this.duration(billHearingReminder.timestamp)}, or on ${billHearingReminder.localDate} at ${billHearingReminder.localTime}\n`;
         }
-        embed.addField(`${parser.state(billHearingsReminder.bill.state)} ${billHearingsReminder.bill.number}`, block);
+        embed.addFields({
+          name: `${parser.state(billHearingsReminder.bill.state)} ${billHearingsReminder.bill.number}`, value: block
+        });
+        // embed.addField(`${parser.state(billHearingsReminder.bill.state)} ${billHearingsReminder.bill.number}`, block);
         count += 1;
       } else {
-        embed.addField('Warning', 'Reached limit of 10 reminders. Consider limiting your reminder interval.');
+        embed.addFields({ name: 'Warning', value: 'Reached limit of 10 reminders. Consider limiting your reminder interval.'});
+        // embed.addField('Warning', 'Reached limit of 10 reminders. Consider limiting your reminder interval.');
       }
     }
 
     embed.setTimestamp().setFooter(`${count} of ${billHearingsReminders.length} bills`);
 
-    await channel.send(embed);
+    await channel.send({ embeds: [embed] });
+    // await channel.send(embed);
   } else {
     for (const billHearingsReminder of billHearingsReminders) {
       for (const billHearingReminder of billHearingsReminder.hearingReminders) {
@@ -49,16 +54,19 @@ exports.updateBill = async function (bill, updateReport, channel) {
         .setDescription(this.abbreviate(bill.title, 500));
 
       if (updateReport.progress) {
-        embed.addField(`New ${this.date(updateReport.progress.timestamp)} Action`, updateReport.progress.action);
+        embed.addFields({ name: `New ${this.date(updateReport.progress.timestamp)} Action`, value: updateReport.progress.action });
+        // embed.addField(`New ${this.date(updateReport.progress.timestamp)} Action`, updateReport.progress.action);
       }
 
       if (updateReport.hearing) {
-        embed.addField(`New ${updateReport.hearing.localDate} ${updateReport.hearing.localTime || ''} ${updateReport.hearing.type}`, updateReport.hearing.description);
+        embed.addFields({ name: `New ${updateReport.hearing.localDate} ${updateReport.hearing.localTime || ''} ${updateReport.hearing.type}`, value: updateReport.hearing.description });
+        // embed.addField(`New ${updateReport.hearing.localDate} ${updateReport.hearing.localTime || ''} ${updateReport.hearing.type}`, updateReport.hearing.description);
       }
 
       embed.setTimestamp().setFooter(bill.id);
 
-      await channel.send(embed);
+      await channel.send({ embeds: [embed] });
+      // await channel.send(embed);
     }
   } else {
     if (updateReport.new) {
@@ -107,13 +115,18 @@ exports.bills = async function (bills, channel, client) {
         } else {
           billText += '**Status:** Ignored';
         }
-        embed.addField(`${parser.state(bill.state)} ${bill.number}`, billText);
+        embed.addFields({
+          name: `${parser.state(bill.state)} ${bill.number}`, value: billText,
+        });
+        // embed.addField(`${parser.state(bill.state)} ${bill.number}`, billText);
         index += 1;
         fields += 1;
       }
 
-      embed.setTimestamp().setFooter(`${fields} ${fields === 1 ? 'bill' : 'bills'}`);
-      const sentMessage = await channel.send(embed);
+      embed.setTimestamp().setFooter({ text: `${fields} ${fields === 1 ? 'bill' : 'bills'}` });
+      const sentMessage = await channel.send({
+        embeds: [embed]
+      });
 
       if (index < bills.length) {
         await sentMessage.react('⬇️');

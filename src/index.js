@@ -5,6 +5,7 @@ const Discord = require('discord.js');
 const client = new Discord.Client({
   retryLimit: process.env.DISCORD_RETRY_LIMIT || 3,
   intents: [
+    Discord.GatewayIntentBits.Guilds,
     Discord.GatewayIntentBits.GuildMessages,
     Discord.GatewayIntentBits.MessageContent,
     Discord.GatewayIntentBits.DirectMessages,
@@ -27,17 +28,15 @@ client.on('ready', async () => {
   background.schedule(client);
 });
 
-client.on('message', message => {
+client.on('messageCreate', message => {
   const { channel } = message;
 
-  const mentioned = message.content.includes(`<@!${client.user.id}>`);
-
-  if (mentioned) {
+  if (message.mentions.has(client.user.id)) {
     message.react('😇');
   }
 
   // Check that we are not in private messages
-  if (channel.type !== 'text') return;
+  if (channel.type !== Discord.ChannelType.GuildText) return;
 
   if ((!database.getConfig('channel') || channel.name === database.getConfig('channel')) && message.cleanContent.startsWith(database.getConfig('prefix'))) {
     commandHandler.handle(message, client);
