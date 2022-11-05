@@ -3,7 +3,12 @@ require('dotenv').config();
 const background = require('./background');
 const Discord = require('discord.js');
 const client = new Discord.Client({
-  retryLimit: process.env.DISCORD_RETRY_LIMIT || 3
+  retryLimit: process.env.DISCORD_RETRY_LIMIT || 3,
+  intents: [
+    Discord.GatewayIntentBits.GuildMessages,
+    Discord.GatewayIntentBits.MessageContent,
+    Discord.GatewayIntentBits.DirectMessages,
+  ],
 });
 const database = require('./database');
 
